@@ -1,0 +1,204 @@
+* {
+  font-family: arial;
+  margin: 0;
+}
+
+body {
+  height: 100vh;
+  background-color: #2c2c2c;
+  display: flex;
+  flex-direction: column;
+}
+
+.option-menu-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 25px;
+  height: 25px;
+  background-color: #3c3c3c;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+}
+
+.option-menu {
+  position: absolute;
+  top: 2rem;         
+  right: 0;
+  background: #1c1c1c;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  border-radius: 10px;
+  z-index: 1;
+  color: white;
+}
+
+.option-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0;
+}
+
+.option-menu li {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.option-menu li:hover {
+  background: #f0f0f0;
+}
+
+.edit-menu {
+  z-index: 1;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  text-align: center;
+  background: #3c3c3c;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 20px;
+  width: 80%;
+  max-width: 400px;
+  border-radius: 20px;
+}
+
+.edit-menu h3 {
+  padding: 10px;
+}
+.edit-menu input,
+.edit-menu select {
+  padding: 10px;
+  background: black;
+  color: white;
+  width: 90%;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.edit-menu .edit-menu-buttons {
+  display: flex;
+  justify-content: left;
+  gap: 10px;
+}
+.edit-menu .edit-menu-buttons button {
+  width: 100%;
+  height: 40px;
+  background-color: #3c3c3c;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+/*
+  PAGE TRANSITION
+  ---------------
+  Fades and slides content in/out when changing pages
+*/
+.page-transition-enter-active {
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.page-transition-leave-active {
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.page-transition-enter,
+.page-transition-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.filter-bar {
+  display: flex;
+  justify-content: left-align;
+  align-items: left;
+  padding: 10px 20px;
+  gap: 10px;
+  background-color: #1c1c1c;
+  color: white;
+}
+.dropdown {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+.dropdown label {
+  font-size: 15px;
+  color: white;
+  font-weight: bold;
+}
+.dropdown select {
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #2c2c2c;
+  color: white;
+}
+
+/*
+  SLIDE TRANSITION
+  -------------------------
+  Slides the forms from the right with a fade effect
+*/
+.slide-enter-active {
+  transition: transform 0.3s ease;
+  animation: fadeIn 1s ease;
+}
+.slide-leave-active {
+  transition: transform 0.3s ease;
+  animation: fadeOut 0.3s ease;
+}
+.slide-enter {
+  transform: translateX(100%);
+  opacity: 0;
+}
+.slide-leave-to {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+
+/* Animations for fading in and out */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/*
+  RESPONSIVE MEDIA QUERIES
+  ------------------------
+  Adjusts layout for smaller screens (tablets and phones) (max-width: 768px)
+*/
+@media (max-width: 768px) {
+  .filter-bar {
+    flex-direction: column;
+  }
+  .drop-down {
+    flex-direction: column;
+  }
+}
