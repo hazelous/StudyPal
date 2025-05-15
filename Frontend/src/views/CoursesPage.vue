@@ -11,7 +11,20 @@
         @toggle-edit-course="toggleEdit"/>
 
         <!-- Button to open the Add Course form -->
-        <button class="add-course-button" @click="ShowAddCourse = true">+</button>
+        <button class="add-course-button" @click="ShowAddMenu = true">+</button>
+
+        <!-- Add Menu-->
+        <transition name="slide">
+            <div v-if="ShowAddMenu" class="add-course-form">
+                <h3>Add Menu</h3>
+                <div class="add-course-buttons">
+                    <button @click="AddCourse">Enroll Course</button>
+                    <button>Cancel</button>
+                </div>
+                <br>
+                <p>create new course</p>
+            </div>
+        </transition>
 
         <!-- Add Course Form -->
         <transition name="slide">
@@ -50,6 +63,7 @@ import CourseCard from '@/components/CourseCard.vue'
         data: function() {
             return {
               // Toggles "Add Course" modal
+              ShowAddMenu: false,
               ShowAddCourse: false,
               ShowEditMenu: false,
               // Stores user input for a new course
@@ -72,6 +86,9 @@ import CourseCard from '@/components/CourseCard.vue'
         methods: {
           async GetCourses() {
             this.$root.GetCourses();
+          },
+          async GetCoursesForSelectedProfile() {
+            this.$root.GetCoursesForSelectedProfile();
           },
             // Sends a new course to the backend which sends it to sql db, then clears input
           async AddCourse() {
@@ -130,7 +147,8 @@ import CourseCard from '@/components/CourseCard.vue'
           }
         },
         mounted () {
-            this.GetCourses()
+          this.GetCourses()
+          this.GetCoursesForSelectedProfile()
         }
     }
 </script>

@@ -38,31 +38,17 @@ export default {
   name: "App",
   data: function() {
     return {
-      // Default profiles array with a single "Guest" user
+      // Array to store profiles
       profiles: [],
-      // Tracks which profile is currently selected
+      // Tracks which profile is currently active
       SelectedProfileID: 1,
 
-      // Sample courses array (can be expanded via Add Course)
-      courses: [
-        {
-          id: 1,
-          name: "SIT120 - Responsive Web Apps",
-          image: "https://i.imgur.com/4NNunpg.png"
-        },
-        {
-          id: 2,
-          name: "SIT111 - Computer Systems",
-          image: "https://i.imgur.com/dz3bDfI.png"
-        }
-      ],
-      // Auto-increment ID for newly added courses
-      NewCourseID: 3,
+      // Array to store courses
+      courses: [],
+      AllCourses: [],
 
-      // Sample tasks array with different properties
+      // Array to store tasks
       tasks: [],
-      // Auto-increment ID for newly added tasks
-      NewTaskID: 3,
 
       // Toggles the navbar menu for mobile
       ShowMenu: false
@@ -92,10 +78,21 @@ export default {
         // get data from backend
         const response = await axios.get('http://127.0.0.1:8000/api/showallcourses');
         // store data in courses array in the component
-        this.courses = response.data.data;
+        this.AllCourses = response.data.data;
       } catch (error) {
         console.error("failed to fetch courses", error);
         alert("failed to fetch courses");
+      }
+    },
+    async GetCoursesForSelectedProfile() {
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/showcourseidforprofile/${this.SelectedProfileID}`);
+        // ?? [] means "if its null or empty then return an empty array []"
+        const courseIDs = response.data.data ?? [];
+        this.courses = this.AllCourses.filter(course => courseIDs.includes(course.course_id))
+      } catch (error) {
+        console.error("failed to fetch courses for profile", error);
+        alert("failed to fetch courses for profile");
       }
     },
     async GetTasks() {
@@ -108,6 +105,7 @@ export default {
       }
     },
   },
+  
 }
 </script>
 

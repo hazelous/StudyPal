@@ -12,10 +12,12 @@ func RouterApp(c *fiber.App) {
 		AllowOrigins: "*",
 	}))
 	c.Get("/api/showallprofiles", controllers.ShowAllProfiles)
+	c.Get("/api/showcourseIdforprofile/:id", controllers.ShowCourseIdForProfile)
 	c.Get("/api/showallcourses", controllers.ShowAllCourses)
 	c.Get("/api/showalltasks", controllers.ShowAllTasks)
 	c.Post("/api/addprofile", controllers.AddProfile)
 	c.Post("/api/addcourse", controllers.AddCourse)
+	c.Post("/api/addprofilecourse", controllers.AddProfileCourse)
 	c.Post("/api/addtask", controllers.AddTask)
 	c.Post("/api/deleteprofile", controllers.DeleteProfile)
 	c.Post("/api/deletecourse", controllers.DeleteCourse)
