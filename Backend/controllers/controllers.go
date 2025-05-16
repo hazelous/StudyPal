@@ -184,6 +184,28 @@ func DeleteCourse(c *fiber.Ctx) error {
 	})
 }
 
+func DeleteProfileCourse(c *fiber.Ctx) error {
+	ProfileCourse := new(req.ProfileCourseReq)
+	if err := c.BodyParser(ProfileCourse); err != nil {
+		return err
+	}
+	validate := validator.New()
+	if err := validate.Struct(ProfileCourse); err != nil {
+		return err
+	}
+	delprofilecourse := entity.ProfileCourses{
+		ProfileID: ProfileCourse.ProfileID,
+		CourseID:  ProfileCourse.CourseID,
+	}
+
+	if err := database.DB.Delete(&delprofilecourse).Error; err != nil {
+		return err
+	}
+	return c.JSON(fiber.Map{
+		"message": "Successfully Deleted ProfileCourse",
+	})
+}
+
 func DeleteTask(c *fiber.Ctx) error {
 	task := new(req.DelTaskReq)
 	if err := c.BodyParser(task); err != nil {
