@@ -15,6 +15,7 @@ func RouterApp(c *fiber.App) {
 	c.Get("/api/showcourseIdforprofile/:id", controllers.ShowCourseIdForProfile)
 	c.Get("/api/showallcourses", controllers.ShowAllCourses)
 	c.Get("/api/showalltasks", controllers.ShowAllTasks)
+	c.Get("/api/showtasksforprofile/:id", controllers.ShowTasksForProfile)
 	c.Post("/api/addprofile", controllers.AddProfile)
 	c.Post("/api/addcourse", controllers.AddCourse)
 	c.Post("/api/addprofilecourse", controllers.AddProfileCourse)

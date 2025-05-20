@@ -56,6 +56,21 @@ func ShowAllTasks(c *fiber.Ctx) error {
 	})
 }
 
+func ShowTasksForProfile(c *fiber.Ctx) error {
+	ProfileID := c.Params("id")
+	var tasks []entity.Tasks
+	if err := database.DB.Table("tasks").
+		Select("tasks.*").
+		Joins("JOIN profile_courses ON tasks.course_id = profile_courses.course_id").
+		Where("profile_id = ?", ProfileID).
+		Find(&tasks).Error; err != nil {
+		return err
+	}
+	return c.JSON(fiber.Map{
+		"data": tasks,
+	})
+}
+
 func AddProfile(c *fiber.Ctx) error {
 	profile := new(req.ProfileReq)
 	if err := c.BodyParser(profile); err != nil {
