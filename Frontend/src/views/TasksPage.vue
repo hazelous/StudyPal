@@ -334,6 +334,7 @@ export default {
   // wait for root to fetch tasks and courses
   await this.GetTasks();
   await this.GetCourses();
+  await this.$root.GetCoursesForSelectedProfile()
   // then apply filter and sorting
   this.UpdateTasks();
 },

@@ -97,7 +97,7 @@ export default {
     },
     async GetTasks() {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/showalltasks')
+        const response = await axios.get(`http://127.0.0.1:8000/api/showtasksforprofile/${this.SelectedProfileID}`)
         this.tasks = response.data.data;
       } catch(error) {
         console.error("failed to fetch tasks", error);

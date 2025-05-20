@@ -121,7 +121,7 @@ import CourseCard from '@/components/CourseCard.vue'
             this.CancelEnroll();
           },
           CancelEnroll() {
-            this.EnrollID = null;
+            this.EnrollID = "";
             this.ShowEnrollCourse = false;
           },
           SwitchMenu() {

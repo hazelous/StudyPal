@@ -118,6 +118,7 @@ export default {
     mounted() {
         this.$root.GetCourses();
         this.$root.GetTasks();
+        this.$root.GetCoursesForSelectedProfile()
         this.UpdateProgress();
     }
 }
