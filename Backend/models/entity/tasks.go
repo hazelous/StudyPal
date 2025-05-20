@@ -9,5 +9,4 @@ type Tasks struct {
 	TaskDifficulty int       `json:"task_difficulty"`
 	TaskWeight     int       `json:"task_weight"`
 	TaskDueDate    time.Time `json:"task_due_date" gorm:"type:date"`
-	TaskStatus     string    `json:"task_status"`
 }

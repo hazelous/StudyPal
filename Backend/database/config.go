@@ -12,9 +12,9 @@ var DB *gorm.DB
 func ConnectDatabase() {
 	var err error
 	DB, err = gorm.Open(sqlite.Open("study_pal.db"), &gorm.Config{})
-  if err != nil {
-    panic("failed to connect database")
-  }
+	if err != nil {
+		panic("failed to connect database")
+	}
 
-  fmt.Println("SQLite database connected")
+	fmt.Println("SQLite database connected")
 }

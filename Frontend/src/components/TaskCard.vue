@@ -20,9 +20,9 @@
           <div class="stat" :style="GetDueDateStyle(task.task_due_date)">
             Due Date: {{ FormatDate(task.task_due_date) }}
           </div>
-          <div class="stat" :style="GetStatusStyle(task.task_status)">
+          <div class="stat" :style="GetStatusStyle(status)">
             <label :for="'status-' + task.id">Status: </label>
-            <select :id="'status-' + task.id" v-model="task.task_status" @change="updateStatus">
+            <select :id="'status-' + task.id" v-model="status" @change="updateStatus">
               <option value="Not Started">Not Started</option>
               <option value="Working On">Working On</option>
               <option value="Completed">Completed</option>
@@ -53,11 +53,22 @@ export default {
             type: Object,
             required: true
         },
+        taskStatus: {
+            type: string,
+            required: true
+        }
     },
     data: function() {
         return {
             showMenu: false,
+            status: this.taskStatus,
         }
+    },
+    watch: {
+      // if the parent ever changes taskStatus, keep in sync
+      taskStatus(newVal) {
+        this.localStatus = newVal
+      }
     },
     methods: {
         GetDifficultyStyle(difficulty) {
@@ -102,13 +113,14 @@ export default {
         },
         async updateStatus() {
           try {
-            await axios.post('http://127.0.0.1:8000/api/editstatus', {
+            await axios.post('http://127.0.0.1:8000/api/updatestatus', {
+              "profile_id": this.$root.SelectedProfileID,
               "task_id": this.task.task_id,
-              "task_status": this.task.task_status,
+              "task_status": this.status,
             })
           } catch (error) {
-            console.error("unable to edit status", error);
-            alert("unable to edit status");
+            console.error("unable to update status", error);
+            alert("unable to update status");
           }
         },
         toggleEdit() {
