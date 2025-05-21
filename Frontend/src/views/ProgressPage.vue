@@ -68,26 +68,44 @@ export default {
     computed: {
         // Access the global courses array
         courses() {
-        return this.$root.courses;
+          return this.$root.courses;
         },
         // Access the global tasks array
         tasks() {
-        return this.$root.tasks;
+          return this.$root.tasks;
+        },
+        TaskStatusList() {
+          return this.$root.TaskStatusList;
         },
         // Filter tasks by the selected course
         FilteredTasks() {
-        if (this.SelectedCourse === "all") {
-            return this.tasks;
-        } else {
-            return this.tasks.filter(task => task.course_id === this.SelectedCourse);
-        }
+          if (this.SelectedCourse === "all") {
+              return this.tasks;
+          } else {
+              return this.tasks.filter(task => task.course_id === this.SelectedCourse);
+          }
+        },
+        FilteredTaskStatus() {
+          if (this.SelectedCourse === "all") {
+            return this.TaskStatusList;
+          }
+
+          // find which task_ids belong to the selected course
+          const taskIdsForCourse = this.tasks
+            .filter(task => task.course_id === this.SelectedCourse)
+            .map(task => task.task_id);
+
+          // only keep statuses whose task_id is in that list
+          return this.TaskStatusList.filter(profiletask =>
+            taskIdsForCourse.includes(profiletask.task_id)
+          );
         }
     },
     methods: {
         // Recompute progress metrics (completed tasks, overdue tasks, etc.)
         UpdateProgress() {
         const totalTasks = this.FilteredTasks.length;
-        const completedTasks = this.FilteredTasks.filter(task => task.task_status === "Completed").length;
+        const completedTasks = this.FilteredTaskStatus.filter(profiletask => profiletask.task_status === "Completed").length;
         const overdueTasks = this.FilteredTasks.filter(task => {
             const today = new Date();
             return new Date(task.task_due_date).getTime() < today && task.task_status !== "Completed";
@@ -118,7 +136,7 @@ export default {
     mounted() {
         this.$root.GetCourses();
         this.$root.GetTasks();
-        this.$root.GetCoursesForSelectedProfile()
+        this.$root.GetCoursesForSelectedProfile();
         this.UpdateProgress();
     }
 }

@@ -71,6 +71,17 @@ func ShowTasksForProfile(c *fiber.Ctx) error {
 	})
 }
 
+func ShowTaskStatusForProfile(c *fiber.Ctx) error {
+	ProfileID := c.Params("id")
+	var ProfileTasks []entity.ProfileTasks
+	if err := database.DB.Where("profile_id = ?", ProfileID).Find(&ProfileTasks).Error; err != nil {
+		return err
+	}
+	return c.JSON(fiber.Map{
+		"data": ProfileTasks,
+	})
+}
+
 func AddProfile(c *fiber.Ctx) error {
 	profile := new(req.ProfileReq)
 	if err := c.BodyParser(profile); err != nil {
@@ -149,7 +160,6 @@ func AddTask(c *fiber.Ctx) error {
 		TaskDifficulty: task.TaskDifficulty,
 		TaskWeight:     task.TaskWeight,
 		TaskDueDate:    task.TaskDueDate,
-		TaskStatus:     task.TaskStatus,
 	}
 	if err := database.DB.Create(&newTask).Error; err != nil {
 		return err
@@ -322,23 +332,61 @@ func EditTask(c *fiber.Ctx) error {
 	})
 }
 
-func EditTaskStatus(c *fiber.Ctx) error {
-	task := new(req.EditTaskStatusReq)
-	if err := c.BodyParser(task); err != nil {
+func UpdateTaskStatus(c *fiber.Ctx) error {
+	ProfileTask := new(req.ProfileTaskReq)
+	if err := c.BodyParser(ProfileTask); err != nil {
 		return err
 	}
 	validate := validator.New()
-	if err := validate.Struct(task); err != nil {
+	if err := validate.Struct(ProfileTask); err != nil {
 		return err
 	}
-	edittask := entity.Tasks{
-		TaskID:     task.TaskID,
-		TaskStatus: task.TaskStatus,
+
+	editprofiletask := entity.ProfileTasks{
+		ProfileID:  ProfileTask.ProfileID,
+		TaskID:     ProfileTask.TaskID,
+		TaskStatus: ProfileTask.TaskStatus,
 	}
-	if err := database.DB.Model(&edittask).Update("task_status", edittask.TaskStatus).Error; err != nil {
-		return err
+
+	res := database.DB.
+		Model(&editprofiletask).
+		Where("profile_id = ? AND task_id = ?", ProfileTask.ProfileID, ProfileTask.TaskID).
+		Update("task_status", ProfileTask.TaskStatus)
+
+	if res.Error != nil {
+		return res.Error
 	}
+
+	// 4) If no row was updated, insert a new one
+	if res.RowsAffected == 0 {
+		if err := database.DB.Create(&editprofiletask).Error; err != nil {
+			return err
+		}
+	}
+
+	// 5) Return success
 	return c.JSON(fiber.Map{
-		"message": "Successfully Edited Status",
+		"message": "status saved",
 	})
 }
+
+//func EditTaskStatus(c *fiber.Ctx) error {
+//task := new(req.EditTaskStatusReq)
+//if err := c.BodyParser(task); err != nil {
+//	return err
+//}
+//validate := validator.New()
+//if err := validate.Struct(task); err != nil {
+//	return err
+//}
+//edittask := entity.Tasks{
+//	TaskID:     task.TaskID,
+//	TaskStatus: task.TaskStatus,
+//}
+//if err := database.DB.Model(&edittask).Update("task_status", edittask.TaskStatus).Error; err != nil {
+//	return err
+//}
+//return c.JSON(fiber.Map{
+//	"message": "Successfully Edited Status",
+//	})
+//}

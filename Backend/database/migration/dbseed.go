@@ -125,7 +125,6 @@ func TaskSeed(db *gorm.DB) error {
 				TaskDifficulty: 1,
 				TaskWeight:     1,
 				TaskDueDate:    time.Date(2025, time.October, 2, 0, 0, 0, 0, time.UTC),
-				TaskStatus:     "Not Started",
 			},
 			{
 				TaskName:       "Project 1",
@@ -133,7 +132,6 @@ func TaskSeed(db *gorm.DB) error {
 				TaskDifficulty: 10,
 				TaskWeight:     30,
 				TaskDueDate:    time.Date(2025, time.January, 15, 0, 0, 0, 0, time.UTC),
-				TaskStatus:     "Completed",
 			},
 			{
 				TaskName:       "Test",
@@ -141,7 +139,6 @@ func TaskSeed(db *gorm.DB) error {
 				TaskDifficulty: 10,
 				TaskWeight:     100,
 				TaskDueDate:    time.Date(2025, time.May, 21, 0, 0, 0, 0, time.UTC),
-				TaskStatus:     "Not Started",
 			},
 		}
 

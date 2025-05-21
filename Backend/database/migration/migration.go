@@ -13,6 +13,7 @@ func Migrate() {
 		&entity.Courses{},
 		&entity.ProfileCourses{},
 		&entity.Tasks{},
+		&entity.ProfileTasks{},
 	)
 	if err != nil {
 		panic(err)

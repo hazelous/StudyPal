@@ -49,7 +49,7 @@ export default {
 
       // Array to store tasks
       tasks: [],
-
+      TaskStatusList: [],
       // Toggles the navbar menu for mobile
       ShowMenu: false
     }
@@ -104,8 +104,25 @@ export default {
         alert("failed to fetch tasks");
       }
     },
+    async GetTaskStatusList() {
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/showtaskstatusforprofile/${this.SelectedProfileID}`)
+        this.TaskStatusList = response.data.data;
+      } catch(error) {
+        console.error("failed to fetch task status'", error);
+        alert("failed to fetch task status'");
+      }
+    }
   },
-  
+  watch: {
+    SelectedProfileID() {
+      this.GetTaskStatusList();
+    }
+  },
+  mounted() {
+    // if you have a default profile selected on startup
+    this.GetTaskStatusList();
+  }
 }
 </script>
 
