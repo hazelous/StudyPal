@@ -54,7 +54,7 @@ export default {
             required: true
         },
         taskStatus: {
-            type: string,
+            type: String,
             required: true
         }
     },
@@ -71,6 +71,9 @@ export default {
       }
     },
     methods: {
+        GetTaskStatusList() {
+          this.$root.GetTaskStatusList();
+        },
         GetDifficultyStyle(difficulty) {
             if (difficulty === null) return { backgroundColor: "gray" };
             if (difficulty <= 3) return { backgroundColor: "green" };
@@ -118,6 +121,7 @@ export default {
               "task_id": this.task.task_id,
               "task_status": this.status,
             })
+            await this.GetTaskStatusList();
           } catch (error) {
             console.error("unable to update status", error);
             alert("unable to update status");

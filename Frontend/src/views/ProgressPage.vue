@@ -68,19 +68,19 @@ export default {
     computed: {
         // Access the global courses array
         courses() {
-        return this.$root.courses;
+          return this.$root.courses;
         },
         // Access the global tasks array
         tasks() {
-        return this.$root.tasks;
+          return this.$root.tasks;
         },
         // Filter tasks by the selected course
         FilteredTasks() {
-        if (this.SelectedCourse === "all") {
-            return this.tasks;
-        } else {
-            return this.tasks.filter(task => task.course_id === this.SelectedCourse);
-        }
+          if (this.SelectedCourse === "all") {
+              return this.tasks;
+          } else {
+              return this.tasks.filter(task => task.course_id === this.SelectedCourse);
+          }
         }
     },
     methods: {
@@ -118,7 +118,7 @@ export default {
     mounted() {
         this.$root.GetCourses();
         this.$root.GetTasks();
-        this.$root.GetCoursesForSelectedProfile()
+        this.$root.GetCoursesForSelectedProfile();
         this.UpdateProgress();
     }
 }

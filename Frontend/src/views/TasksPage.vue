@@ -158,6 +158,12 @@ export default {
     async GetCourses() {
       this.$root.GetCourses();
     },
+    async GetTaskStatusList() {
+      this.$root.GetTaskStatusList();
+    },
+    async GetCoursesForSelectedProfile() {
+      this.$root.GetCoursesForSelectedProfile();
+    },
     // Filters tasks by the currently selected course
     FilterTasks() {
       this.FilteredTasks = [];
@@ -339,8 +345,7 @@ export default {
   // wait for root to fetch tasks and courses
   await this.GetTasks();
   await this.GetCourses();
-  await this.$root.GetCoursesForSelectedProfile();
-  await this.$root.GetTaskStatusList();
+  await this.GetCoursesForSelectedProfile();
   // then apply filter and sorting
   this.UpdateTasks();
 },

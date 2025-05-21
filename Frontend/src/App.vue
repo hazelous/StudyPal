@@ -114,7 +114,15 @@ export default {
       }
     }
   },
-  
+  watch: {
+    SelectedProfileID() {
+      this.GetTaskStatusList();
+    }
+  },
+  mounted() {
+    // if you have a default profile selected on startup
+    this.GetTaskStatusList();
+  }
 }
 </script>
 
