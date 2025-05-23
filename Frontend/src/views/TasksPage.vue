@@ -37,6 +37,7 @@
       v-for="task in FilteredTasks"
       :key="task.task_id"
       :task="task"
+      :taskStatus="GetTaskStatus(task.task_id)"
       :course="GetCourseDetails(task.course_id)"
       @toggle-edit="toggleEdit"
       />
@@ -128,7 +129,6 @@ export default {
         difficulty: null,
         weight: null,
         DueDate: "",
-        status: "Not Started" // Default status for a new task
       },
       EditTask: {
         id: null,
@@ -146,6 +146,9 @@ export default {
     },
     courses () {
       return this.$root.courses;
+    },
+    TaskStatusList () {
+      return this.$root.TaskStatusList;
     }
   },
   methods: {
@@ -154,6 +157,12 @@ export default {
     },
     async GetCourses() {
       this.$root.GetCourses();
+    },
+    async GetTaskStatusList() {
+      this.$root.GetTaskStatusList();
+    },
+    async GetCoursesForSelectedProfile() {
+      this.$root.GetCoursesForSelectedProfile();
     },
     // Filters tasks by the currently selected course
     FilterTasks() {
@@ -182,6 +191,10 @@ export default {
     // Fetch details of a course (like name, image) based on its ID
     GetCourseDetails(courseID) {
       return this.courses.find(course => course.course_id === courseID) || {};
+    },
+    // "?" safely reads task_status or yields undefined instead of throwing an error
+    GetTaskStatus(task_id) {
+      return this.TaskStatusList.find(profiletask => profiletask.task_id === task_id)?.task_status || "Not Started";
     },
     // Returns dynamic styling for difficulty
     GetDifficultyStyle(difficulty) {
@@ -249,7 +262,6 @@ export default {
           task_difficulty: this.NewTask.difficulty,
           task_weight: this.NewTask.weight,
           task_due_date: isoDate,
-          task_status: this.NewTask.status,
         })
       } catch(error) {
         console.error("failed to add task", error);
@@ -292,7 +304,6 @@ export default {
         difficulty: null,
         weight: null,
         DueDate: "",
-        status: "Not Started"
       };
       this.ShowAddTask = false;
     },
@@ -334,6 +345,7 @@ export default {
   // wait for root to fetch tasks and courses
   await this.GetTasks();
   await this.GetCourses();
+  await this.GetCoursesForSelectedProfile();
   // then apply filter and sorting
   this.UpdateTasks();
 },

@@ -11,6 +11,7 @@ import (
 func main() {
 	database.ConnectDatabase()
 	migration.Migrate()
+	migration.DBSeed(database.DB)
 
 	app := fiber.New()
 	routers.RouterApp(app)

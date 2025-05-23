@@ -8,6 +8,7 @@
         <div v-if="showMenu" class="option-menu">
             <ul>
                 <li @click="editCourse">Edit</li>
+                <li @click="dropCourse">Drop</li>
                 <li @click="deleteCourse">Delete</li>
             </ul>
         </div>
@@ -36,12 +37,24 @@ import axios from 'axios'
             async deleteCourse() {
                 try {
                     await axios.post('http://127.0.0.1:8000/api/deletecourse', {
-                    course_id: this.course.course_id,
+                        course_id: this.course.course_id,
                     })
                     this.$root.GetCourses();
                 } catch(error) {
                     console.error('unable to delete course', error);
                     alert('unable to delete course');
+                }
+            },
+            async dropCourse() {
+                try {
+                    await axios.post('http://127.0.0.1:8000/api/deleteprofilecourse', {
+                        profile_id: this.$root.SelectedProfile.profile_id,
+                        course_id: this.course.course_id,
+                    })
+                    this.$root.GetCoursesForSelectedProfile()
+                } catch(error) {
+                    console.error('unable to delete profilecourse', error);
+                    alert('unable to drop course');
                 }
             },
             editCourse() {
