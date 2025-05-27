@@ -8,16 +8,15 @@
   
         <!-- Loop through existing profiles and render each one -->
         <ProfileCard
-            v-for="profile in profiles"
+            v-if="profile"
             :key="profile.profile_id"
             :profile="profile"
-            :selectedProfileID="SelectedProfileID"
-            @profile-selected="selectProfile"
             @toggle-edit-profile="toggleEditProfile"
         />
 
         <!-- Button to open the Add Profile form -->
         <button class="profile-card add-profile-button" @click="ShowAddProfile = true">+</button>
+        <button class="profile-card add-profile-button" @click="ShowLogin = true">Login</button>
 
         <!-- Add Profile Form -->
         <transition name="slide">
@@ -28,6 +27,17 @@
             <div class="add-profile-buttons">
                 <button @click="AddProfile">Add Profile</button>
                 <button @click="cancelAdd">Cancel</button>
+            </div>
+          </div>
+        </transition>
+
+        <transition name="slide">
+          <div v-if="ShowLogin" class="add-profile-form">
+            <h3>Login</h3>
+            <input v-model="LoginId" placeholder="Enter id">
+            <div class="add-profile-buttons">
+                <button @click="Login">Login</button>
+                <button @click="cancelLogin">Cancel</button>
             </div>
           </div>
         </transition>
@@ -57,11 +67,13 @@
     data: function() {
       return {
         ShowAddProfile: false, // Controls visibility of the "Add Profile" modal
+        ShowLogin: false,
         ShowEditProfile: false,
         NewProfile: {
           name: "",
           image: "",
         },
+        LoginId: null,
         EditProfile: {
           id: null,
           name: "",
@@ -70,18 +82,10 @@
       };
     },
     computed: {
-      profiles() {
-        return this.$root.profiles;
+      profile() {
+        return this.$root.profile;
       },
       // Getter/setter for the selected profile ID in the root instance
-      SelectedProfileID: {
-        get() {
-          return this.$root.SelectedProfileID;
-        },
-        set(value) {
-          this.$root.SelectedProfileID = value;
-        }
-      }
     },
     methods: {
       // async to allow the app to run while waiting for response from axios
@@ -102,7 +106,6 @@
             profile_image: this.NewProfile.image,
           });
           // fetch the profiles again from the backend to show the new profile added
-          this.GetProfiles();
         } catch (error) {
           console.error("Failed to add profile:", error);
           alert("Failed to add profile");
@@ -116,9 +119,26 @@
         this.NewProfile.image = "";
         this.ShowAddProfile = false;
       },
-      // Updates which profile is currently selected
-      selectProfile(id) {
-        this.SelectedProfileID = id;
+
+      async Login() {
+        if (!this.LoginId) {
+          alert("Please enter an ID!");
+          return;
+        }
+        try {
+          const response = await axios.get(`http://127.0.0.1:8000/api/showprofilebyid/${this.LoginId}`)
+          this.$root.profile = response.data.data
+          console.log(this.$root.profile)
+        } catch(error) {
+          console.error("unable to Log in", error);
+          alert("unable to Log in");
+        }
+        this.cancelLogin();
+      },
+
+      cancelLogin() {
+        this.LoginId = null;
+        this.ShowLogin = !this.ShowLogin;
       },
 
       toggleEditProfile(profile) {
@@ -142,20 +162,19 @@
           console.error("unable to edit profile", error);
           alert("unable to edit profile");
         }
+        this.updateProfile();
         this.cancelEdit();
-        this.GetProfiles();
       },
       cancelEdit() {
         this.EditProfile.id = null;
         this.EditProfile.name = "";
         this.EditProfile.image = "";
         this.ShowEditProfile = false;
+      },
+      async updateProfile() {
+        this.$root.updateProfile();
       }
     },
-    mounted() {
-      // fetch profiles and courses from the backend everytime the component is loaded
-      this.GetProfiles();
-    }
   }
 </script>
 

@@ -19,6 +19,19 @@ func ShowAllProfiles(c *fiber.Ctx) error {
 	})
 }
 
+func ShowProfileByID(c *fiber.Ctx) error {
+	ProfileID := c.Params("id")
+	var profile entity.Profiles
+
+	if err := database.DB.Where("profile_id = ?", ProfileID).Find(&profile).Error; err != nil {
+		return err
+	}
+
+	return c.JSON(fiber.Map{
+		"data": profile,
+	})
+}
+
 func ShowAllCourses(c *fiber.Ctx) error {
 	var courses []entity.Courses
 	if err := database.DB.Find(&courses).Error; err != nil {

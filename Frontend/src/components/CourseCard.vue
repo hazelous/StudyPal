@@ -48,7 +48,7 @@ import axios from 'axios'
             async dropCourse() {
                 try {
                     await axios.post('http://127.0.0.1:8000/api/deleteprofilecourse', {
-                        profile_id: this.$root.SelectedProfile.profile_id,
+                        profile_id: this.$root.profile.profile_id,
                         course_id: this.course.course_id,
                     })
                     this.$root.GetCoursesForSelectedProfile()

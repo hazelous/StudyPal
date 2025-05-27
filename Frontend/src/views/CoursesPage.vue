@@ -106,7 +106,7 @@ import CourseCard from '@/components/CourseCard.vue'
                 alert("Please Select a Course to Enroll");
                 return;
             }
-            console.log("profile id: ", this.$root.SelectedProfile)
+            console.log("profile id: ", this.$root.profile.profile_id)
             console.log("course id: ", this.EnrollID)
             try {
               await axios.post(`http://127.0.0.1:8000/api/addprofilecourse`, {

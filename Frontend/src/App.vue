@@ -1,5 +1,10 @@
 <template>
   <div id="app">
+    <!-- Show Login Page -->
+    <LoginPage
+      v-if="ShowLogin"
+      @login-success="onLoginSuccess"
+    />
     <header class="navbar">
       <!-- Logo Section -->
       <div class="logo">
@@ -20,7 +25,7 @@
 
       <!-- Display Currently Selected User Profile Picture in Navbar -->
       <div class="user">
-        <img :src="SelectedProfile.profile_image" alt="Profile Picture">
+        <img :src="profile?.profile_image" alt="Profile Picture">
       </div>
     </header>
     
@@ -33,15 +38,15 @@
 
 <script>
 import axios from 'axios'
+import LoginPage from '@/views/LoginPage.vue'
 
 export default {
   name: "App",
+  components: { LoginPage },
   data: function() {
     return {
-      // Array to store profiles
-      profiles: [],
-      // Tracks which profile is currently active
-      SelectedProfileID: 1,
+      // Array to store profile
+      profile: {},
 
       // Array to store courses
       courses: [],
@@ -51,28 +56,12 @@ export default {
       tasks: [],
       TaskStatusList: [],
       // Toggles the navbar menu for mobile
-      ShowMenu: false
+      ShowMenu: false,
+      ShowLogin: true
     }
   },
-  computed: {
-    // Finds the profile object matching the currently selected profile ID
-    SelectedProfile() {
-      return this.profiles.find(profile => profile.profile_id === this.SelectedProfileID) || {};
-    }
-  },
+
   methods: {
-    async GetProfiles(){
-      try {
-        // request profiles from backend using axios and wait for it
-        const response = await axios.get('http://127.0.0.1:8000/api/showallprofiles');
-        // fill profiles array with data from the db
-        this.profiles = response.data.data;
-        // if theres an error, alert it
-      } catch (error) {
-        console.error("Failed to fetch profile:", error);
-        alert("failed to fetch profiles");
-      }
-    },
     async GetCourses() {
       try {
         // get data from backend
@@ -86,7 +75,7 @@ export default {
     },
     async GetCoursesForSelectedProfile() {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/showcourseidforprofile/${this.SelectedProfileID}`);
+        const response = await axios.get(`http://127.0.0.1:8000/api/showcourseidforprofile/${this.profile.profile_id}`);
         // ?? [] means "if its null or empty then return an empty array []"
         const courseIDs = response.data.data ?? [];
         this.courses = this.AllCourses.filter(course => courseIDs.includes(course.course_id))
@@ -97,7 +86,7 @@ export default {
     },
     async GetTasks() {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/showtasksforprofile/${this.SelectedProfileID}`)
+        const response = await axios.get(`http://127.0.0.1:8000/api/showtasksforprofile/${this.profile.profile_id}`)
         this.tasks = response.data.data;
       } catch(error) {
         console.error("failed to fetch tasks", error);
@@ -106,16 +95,26 @@ export default {
     },
     async GetTaskStatusList() {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/showtaskstatusforprofile/${this.SelectedProfileID}`)
+        const response = await axios.get(`http://127.0.0.1:8000/api/showtaskstatusforprofile/${this.profile.profile_id}`)
         this.TaskStatusList = response.data.data;
       } catch(error) {
         console.error("failed to fetch task status'", error);
         alert("failed to fetch task status'");
       }
-    }
+    },
+    async updateProfile() {
+        try {
+          const response = await axios.get(`http://127.0.0.1:8000/api/showprofilebyid/${this.profile.profile_id}`)
+          this.profile = response.data.data
+          console.log(this.profile)
+        } catch(error) {
+          console.error("unable to update profile", error);
+          alert("unable to update profile");
+        }
+    },
   },
   watch: {
-    SelectedProfileID() {
+    profile() {
       this.GetTaskStatusList();
     }
   },

@@ -117,7 +117,7 @@ export default {
         async updateStatus() {
           try {
             await axios.post('http://127.0.0.1:8000/api/updatestatus', {
-              "profile_id": this.$root.SelectedProfileID,
+              "profile_id": this.$root.profile.profile_id,
               "task_id": this.task.task_id,
               "task_status": this.status,
             })
