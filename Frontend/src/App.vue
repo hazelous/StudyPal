@@ -1,10 +1,5 @@
 <template>
   <div id="app">
-    <!-- Show Login Page -->
-    <LoginPage
-      v-if="ShowLogin"
-      @login-success="onLoginSuccess"
-    />
     <header class="navbar">
       <!-- Logo Section -->
       <div class="logo">
@@ -38,15 +33,13 @@
 
 <script>
 import axios from 'axios'
-import LoginPage from '@/views/LoginPage.vue'
 
 export default {
   name: "App",
-  components: { LoginPage },
   data: function() {
     return {
       // Array to store profile
-      profile: {},
+      profile: null,
 
       // Array to store courses
       courses: [],
@@ -55,6 +48,8 @@ export default {
       // Array to store tasks
       tasks: [],
       TaskStatusList: [],
+
+      LoggedOut: true,
       // Toggles the navbar menu for mobile
       ShowMenu: false,
       ShowLogin: true
@@ -115,13 +110,14 @@ export default {
   },
   watch: {
     profile() {
-      this.GetTaskStatusList();
+      if (!this.profile) {
+        this.LoggedOut = true;
+      } else {
+        this.GetTaskStatusList();
+        this.LoggedOut = false;
+      }
     }
   },
-  mounted() {
-    // if you have a default profile selected on startup
-    this.GetTaskStatusList();
-  }
 }
 </script>
 

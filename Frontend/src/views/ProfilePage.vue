@@ -1,5 +1,30 @@
 <!-- src/views/ProfilePage.vue -->
 <template>
+  <div>
+    <div v-if="LoggedOut" class="login-page">
+        <!-- Login Form -->
+        <transition name="slide">
+          <div v-if="ShowLogin" class="edit-menu">
+            <h3>Login</h3>
+            <input v-model="LoginId" placeholder="Enter id">
+            <div class="edit-menu-buttons">
+                <button @click="Login">Log In</button>
+            </div>
+            <a href="#" class="toggle-link" @click="ToggleLogIn">Don't have an Account? Register</a>
+          </div>
+        </transition>
+        <transition name="slide">
+          <div v-if="ShowRegister" class="edit-menu">
+            <h3>Register</h3>
+            <input v-model="NewProfile.name" placeholder="Enter Username">
+            <input v-model="NewProfile.image" placeholder="Enter Profile Picture URL">
+            <div class="edit-menu-buttons">
+                <button @click="AddProfile">Register</button>
+            </div>
+            <a href="#" class="toggle-link" @click="ToggleLogIn">Don't have an Account? Register</a>
+          </div>
+        </transition>
+    </div>
     <!-- 
       Displays all profiles and an "Add Profile" button. 
       Clicking the button shows a form to add a new profile using transitions.
@@ -16,7 +41,7 @@
 
         <!-- Button to open the Add Profile form -->
         <button class="profile-card add-profile-button" @click="ShowAddProfile = true">+</button>
-        <button class="profile-card add-profile-button" @click="ShowLogin = true">Login</button>
+        <button class="profile-card add-profile-button" @click="logout">Log Out</button>
 
         <!-- Add Profile Form -->
         <transition name="slide">
@@ -27,17 +52,6 @@
             <div class="add-profile-buttons">
                 <button @click="AddProfile">Add Profile</button>
                 <button @click="cancelAdd">Cancel</button>
-            </div>
-          </div>
-        </transition>
-
-        <transition name="slide">
-          <div v-if="ShowLogin" class="add-profile-form">
-            <h3>Login</h3>
-            <input v-model="LoginId" placeholder="Enter id">
-            <div class="add-profile-buttons">
-                <button @click="Login">Login</button>
-                <button @click="cancelLogin">Cancel</button>
             </div>
           </div>
         </transition>
@@ -55,6 +69,7 @@
           </div>
         </transition>
     </div>
+  </div>
 </template>
 
 <script>
@@ -67,7 +82,8 @@
     data: function() {
       return {
         ShowAddProfile: false, // Controls visibility of the "Add Profile" modal
-        ShowLogin: false,
+        ShowLogin: true,
+        ShowRegister: false,
         ShowEditProfile: false,
         NewProfile: {
           name: "",
@@ -85,12 +101,19 @@
       profile() {
         return this.$root.profile;
       },
+      LoggedOut() {
+        return this.$root.LoggedOut;
+      }
       // Getter/setter for the selected profile ID in the root instance
     },
     methods: {
       // async to allow the app to run while waiting for response from axios
-      async GetProfiles(){
+      async GetProfiles() { 
         this.$root.GetProfiles();
+      },
+      ToggleLogIn() {
+        this.ShowLogin = !this.ShowLogin;
+        this.ShowRegister = !this.ShowRegister;
       },
       // Sends a new profile to the backend to be added to the sql db after validating input
       async AddProfile() {
@@ -105,40 +128,31 @@
             profile_name: this.NewProfile.name,
             profile_image: this.NewProfile.image,
           });
+          this.ToggleLogIn();
           // fetch the profiles again from the backend to show the new profile added
         } catch (error) {
           console.error("Failed to add profile:", error);
           alert("Failed to add profile");
         }
         // resets the newprofile values after adding
-        this.cancelAdd();
       },
-      // Resets the input fields and closes the modal without saving
-      cancelAdd() {
-        this.NewProfile.name = "";
-        this.NewProfile.image = "";
-        this.ShowAddProfile = false;
-      },
-
       async Login() {
         if (!this.LoginId) {
           alert("Please enter an ID!");
           return;
         }
         try {
-          const response = await axios.get(`http://127.0.0.1:8000/api/showprofilebyid/${this.LoginId}`)
-          this.$root.profile = response.data.data
-          console.log(this.$root.profile)
+          const response = await axios.get(`http://127.0.0.1:8000/api/showprofilebyid/${this.LoginId}`);
+          this.$root.profile = response.data.data;
+          console.log(this.$root.profile);
         } catch(error) {
           console.error("unable to Log in", error);
           alert("unable to Log in");
         }
-        this.cancelLogin();
       },
 
-      cancelLogin() {
-        this.LoginId = null;
-        this.ShowLogin = !this.ShowLogin;
+      logout() {
+        this.$root.profile = null;
       },
 
       toggleEditProfile(profile) {
@@ -175,10 +189,20 @@
         this.$root.updateProfile();
       }
     },
+    
   }
 </script>
 
 <style scoped>
+  .login-page {
+    /* fill the viewport */
+    position: fixed;
+    z-index: 20;
+    inset: 0;
+    /* translucent black backdrop */
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+
   .profile-container {
     display: flex;
     flex-wrap: wrap;

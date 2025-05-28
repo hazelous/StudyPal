@@ -110,7 +110,7 @@ import CourseCard from '@/components/CourseCard.vue'
             console.log("course id: ", this.EnrollID)
             try {
               await axios.post(`http://127.0.0.1:8000/api/addprofilecourse`, {
-                profile_id: this.$root.SelectedProfile.profile_id,
+                profile_id: this.$root.profile.profile_id,
                 course_id: this.EnrollID,
               })
             } catch (error) {
