@@ -37,24 +37,8 @@
             :key="profile.profile_id"
             :profile="profile"
             @toggle-edit-profile="toggleEditProfile"
+            @log-out="logout"
         />
-
-        <!-- Button to open the Add Profile form -->
-        <button class="profile-card add-profile-button" @click="ShowAddProfile = true">+</button>
-        <button class="profile-card add-profile-button" @click="logout">Log Out</button>
-
-        <!-- Add Profile Form -->
-        <transition name="slide">
-          <div v-if="ShowAddProfile" class="add-profile-form">
-            <h3>Create Profile</h3>
-            <input v-model="NewProfile.name" placeholder="Enter Username">
-            <input v-model="NewProfile.image" placeholder="Enter Profile Picture URL">
-            <div class="add-profile-buttons">
-                <button @click="AddProfile">Add Profile</button>
-                <button @click="cancelAdd">Cancel</button>
-            </div>
-          </div>
-        </transition>
 
         <!-- Edit Profile Form -->
         <transition name="slide">
@@ -153,6 +137,7 @@
 
       logout() {
         this.$root.profile = null;
+        this.LoginId = null;
       },
 
       toggleEditProfile(profile) {

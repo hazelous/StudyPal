@@ -12,6 +12,7 @@
             <ul>
             <li @click.stop="editProfile">Edit</li>
             <li @click.stop="deleteProfile">Delete</li>
+            <li @click.stop="logout">Log Out</li>
             </ul>
         </div>
         <div class="profile-name">{{ profile.profile_name }}</div>
@@ -52,6 +53,9 @@ import axios from 'axios'
             },
             editProfile() {
                 this.$emit("toggle-edit-profile", this.profile);
+            },
+            logout() {
+                this.$emit("log-out");
             }
         }
     }
