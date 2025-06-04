@@ -6,7 +6,8 @@
         <transition name="slide">
           <div v-if="ShowLogin" class="edit-menu">
             <h3>Login</h3>
-            <input v-model="LoginId" placeholder="Enter id">
+            <input v-model="LoginInfo.name" placeholder="Enter Profile Name">
+            <input v-model="LoginInfo.password" placeholder="Enter Password">
             <div class="edit-menu-buttons">
                 <button @click="Login">Log In</button>
             </div>
@@ -16,7 +17,8 @@
         <transition name="slide">
           <div v-if="ShowRegister" class="edit-menu">
             <h3>Register</h3>
-            <input v-model="NewProfile.name" placeholder="Enter Username">
+            <input v-model="NewProfile.name" placeholder="Enter Profile Name">
+            <input v-model="NewProfile.password" placeholder="Enter Password">
             <input v-model="NewProfile.image" placeholder="Enter Profile Picture URL">
             <div class="edit-menu-buttons">
                 <button @click="AddProfile">Register</button>
@@ -71,9 +73,14 @@
         ShowEditProfile: false,
         NewProfile: {
           name: "",
+          password: "",
           image: "",
         },
-        LoginId: null,
+        LoginInfo: {
+          name: "",
+          password: "",
+        },
+        // edit profile does not work for now
         EditProfile: {
           id: null,
           name: "",
@@ -121,14 +128,18 @@
         // resets the newprofile values after adding
       },
       async Login() {
-        if (!this.LoginId) {
-          alert("Please enter an ID!");
+        if (!this.LoginInfo.name || !this.LoginInfo.password) {
+          alert("Please fill all the information");
           return;
         }
         try {
-          const response = await axios.get(`http://127.0.0.1:8000/api/showprofilebyid/${this.LoginId}`);
-          this.$root.profile = response.data.data;
-          console.log(this.$root.profile);
+          const response = await axios.get(`http://127.0.0.1:8000/api/loginprofile/${this.LoginInfo.name}/${this.LoginInfo.password}`);
+          if (response.data.data.profile_id == 0) {
+            alert("Either Profile Name or Password is incorrect");
+          } else {
+            this.$root.profile = response.data.data;
+            console.log(this.$root.profile);
+          }
         } catch(error) {
           console.error("unable to Log in", error);
           alert("unable to Log in");
@@ -137,7 +148,8 @@
 
       logout() {
         this.$root.profile = null;
-        this.LoginId = null;
+        this.login.name = "";
+        this.login.password = "";
       },
 
       toggleEditProfile(profile) {

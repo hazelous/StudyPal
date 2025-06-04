@@ -11,6 +11,7 @@ func RouterApp(c *fiber.App) {
 	c.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
 	}))
+	c.Get("/api/loginprofile/:name/:password", controllers.LoginProfile)
 	c.Get("/api/showallprofiles", controllers.ShowAllProfiles)
 	c.Get("/api/showprofilebyid/:id", controllers.ShowProfileByID)
 	c.Get("/api/showcourseIdforprofile/:id", controllers.ShowCourseIdForProfile)
