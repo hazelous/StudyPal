@@ -2,7 +2,10 @@ services:
   backend:
     image: studypal-backend:ci
     environment:
-      - PORT=8080
+    - PORT=8080
+    - DB_PATH=/app/study_pal.db
+volumes:
+    - ./Backend/study_pal.db:/app/study_pal.db
     ports:
       - "8000:8080"  # host:container
 
