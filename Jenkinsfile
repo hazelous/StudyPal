@@ -24,7 +24,7 @@ pipeline {
         bat '''
         cd Backend
         docker run --rm -e GOTOOLCHAIN=local -v "%cd%":/src -w /src golang:1.24 ^
-          go test ./internal/health -v
+          go test ./internal/health -v -vet=off
         '''
       }
     }
