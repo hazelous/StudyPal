@@ -12,10 +12,9 @@ import (
 var DB *gorm.DB
 
 func ConnectDatabase() {
-	// Backward-compatible default: same as before
 	path := os.Getenv("DB_PATH")
 	if path == "" {
-		path = "study_pal.db"
+		path = "study_pal.db" // resolves to /app/study_pal.db in container
 	}
 
 	db, err := gorm.Open(sqlite.Open(path), &gorm.Config{})
