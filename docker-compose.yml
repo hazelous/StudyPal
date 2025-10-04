@@ -5,7 +5,7 @@ services:
       - PORT=8080                 # app listens on 8080 in the container
       - DB_PATH=/app/study_pal.db # same file every time
     ports:
-      - "8000:8080"               # host:container
+      - "8000:8000"               # host:container
     volumes:
       - ./Backend/study_pal.db:/app/study_pal.db  # file persists on host
 
