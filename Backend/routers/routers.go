@@ -25,7 +25,7 @@ func RouterApp(c *fiber.App) {
 	c.Post("/api/addtask", controllers.AddTask)
 	c.Post("/api/deleteprofile", controllers.DeleteProfile)
 	c.Post("/api/deletecourse", controllers.DeleteCourse)
-	c.Post("api/deleteprofilecourse", controllers.DeleteProfileCourse)
+	c.Post("/api/deleteprofilecourse", controllers.DeleteProfileCourse)
 	c.Post("/api/deletetask", controllers.DeleteTask)
 	c.Post("/api/editprofile", controllers.EditProfile)
 	c.Post("/api/editcourse", controllers.EditCourse)
