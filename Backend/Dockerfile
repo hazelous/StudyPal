@@ -8,12 +8,12 @@ COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
 # CGO may be required for me to use SQLite
-RUN CGO_ENABLED=1 go build -o /out/studypal
+RUN go run .
 
 # Runtime stage
 FROM alpine:3.20
 RUN apk add --no-cache ca-certificates
 WORKDIR /app
 COPY --from=build /out/studypal ./studypal
-EXPOSE 8080
+EXPOSE 8000
 CMD ["./studypal"]
