@@ -11,7 +11,5 @@ services:
 
   frontend:
     image: studypal-frontend:ci
-    depends_on:
-      - backend
     ports:
-      - "3000:3000"
+      - "3000:80"
