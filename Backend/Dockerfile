@@ -15,5 +15,5 @@ FROM alpine:3.20
 RUN apk add --no-cache ca-certificates libstdc++
 WORKDIR /app
 COPY --from=build /out/studypal ./studypal
-EXPOSE 8080
+EXPOSE 8000
 CMD ["./studypal"]
