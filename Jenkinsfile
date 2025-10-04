@@ -38,7 +38,7 @@ pipeline {
         bat 'docker compose -f docker-compose.yml up -d'
 
         // fail build if ports aren't listening
-        bat 'powershell -Command "$ok=(Test-NetConnection -ComputerName localhost -Port 8080).TcpTestSucceeded; if (-not $ok) { Write-Error \\"Backend port 8080 not listening.\\"; exit 1 }"'
+        bat 'powershell -Command "$ok=(Test-NetConnection -ComputerName localhost -Port 8081).TcpTestSucceeded; if (-not $ok) { Write-Error \\"Backend port 8081 not listening.\\"; exit 1 }"'
         bat 'powershell -Command "$ok=(Test-NetConnection -ComputerName localhost -Port 3000).TcpTestSucceeded; if (-not $ok) { Write-Error \\"Frontend port 3000 not listening.\\"; exit 1 }"'
       }
     }
