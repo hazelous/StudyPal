@@ -21,16 +21,6 @@ pipeline {
 
     stage('Test') {
       steps {
-        // Run Go tests inside a docker container
-        bat '''
-        cd Backend
-        docker run --rm -e CGO_ENABLED=1 -v "%cd%":/src -w /src golang:1.24-alpine ^
-          sh -lc "apk add --no-cache build-base && go test ./... -v -coverprofile=coverage.out && go tool cover -func=coverage.out | tail -n 1"
-        '''
-      }
-    }
-    stage('Test') {
-      steps {
         // Backend unit tests (run in a Go container; no Go on host needed)
         // GOTOOLCHAIN=auto to automatically fetch new versions of GO
         bat '''
