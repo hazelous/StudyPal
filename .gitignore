@@ -1,13 +1,13 @@
 # Node/Vue (frontend)
-frontend/node_modules/
-frontend/dist/
-frontend/.env
+Frontend/node_modules/
+Frontend/dist/
+Frontend/.env
 
 # Go (backend)
-backend/vendor/
-backend/*.exe
-backend/*.log
-backend/study_pal.db
+Backend/vendor/
+Backend/*.exe
+Backend/*.log
+Backend/study_pal.db
 
 # IDEs and OS
 .vscode/
