@@ -2,14 +2,12 @@ services:
   backend:
     image: studypal-backend:ci
     environment:
-      - PORT=8000                 # app listens on 8000 in the container
-      - DB_PATH=/app/study_pal.db # same file every time
+      - PORT=8000
+      - DB_PATH=/app/data/study_pal.db
     ports:
-      - "8000:8000"               # host:container
+      - "8000:8000"
     volumes:
-      - ./Backend/study_pal.db:/app/study_pal.db  # file persists on host
+      - studypal_db:/app/data
 
-  frontend:
-    image: studypal-frontend:ci
-    ports:
-      - "3000:80"
+volumes:
+  studypal_db:
