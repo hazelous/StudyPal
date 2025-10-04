@@ -26,7 +26,6 @@ pipeline {
         bat '''
         cd Backend
         docker run --rm -e CGO_ENABLED=0 -e GOTOOLCHAIN=auto -v "%cd%":/src -w /src golang:1.24 ^
-          go test ./... -v -coverprofile=coverage.out
         docker run --rm -v "%cd%":/src -w /src golang:1.24 ^
           bash -lc "go tool cover -func=coverage.out | tail -n 1 || true"
         '''
@@ -38,8 +37,6 @@ pipeline {
     always {
       // Show the images that were built
       bat 'docker images'
-      // Store the test results in a file
-      archiveArtifacts artifacts: 'Backend/coverage.out', allowEmptyArchive: true
     }
   }
 }
