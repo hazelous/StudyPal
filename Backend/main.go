@@ -14,7 +14,9 @@ import (
 func main() {
 	// Connect DB first
 	database.ConnectDatabase()
-
+	migration.Migrate()
+	migration.DBSeed(database.DB)
+	
 	app := fiber.New()
 
 	// CORS: allow frontend in browser
