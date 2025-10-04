@@ -33,18 +33,17 @@ pipeline {
       steps {
         bat '''
         set COMPOSE_PROJECT_NAME=studypal
+    
+        rem Kill anything else using 8000/3000 so our compose can bind them
+        powershell -Command "$ids = docker ps -q --filter \"publish=8000\"; if ($ids) { docker rm -f $ids }"
+        powershell -Command "$ids = docker ps -q --filter \"publish=3000\"; if ($ids) { docker rm -f $ids }"
+    
         docker compose -f docker-compose.yml down -v --remove-orphans || echo no previous stack
-    
-        rem Clean up any old manually created containers that might clash
-        docker rm -f studypal_backend 2>NUL || echo no manual backend
-        docker rm -f studypal_frontend 2>NUL || echo no manual frontend
-    
-        docker compose -f docker-compose.yml up -d --pull never
+        docker compose -f docker-compose.yml up -d --pull never --force-recreate
         '''
     
-        // verify ports match compose (8081 & 3000)
-        bat 'powershell -Command "$ok=(Test-NetConnection -ComputerName localhost -Port 8000).TcpTestSucceeded; if (-not $ok) { Write-Error \\"Backend port 8000 not listening.\\"; exit 1 }"'
-        bat 'powershell -Command "$ok=(Test-NetConnection -ComputerName localhost -Port 3000).TcpTestSucceeded; if (-not $ok) { Write-Error \\"Frontend port 3000 not listening.\\"; exit 1 }"'
+        bat 'powershell -Command "$ok=(Test-NetConnection -ComputerName localhost -Port 8000).TcpTestSucceeded; if (-not $ok) { Write-Error \\"Backend 8000 not listening.\\"; exit 1 }"'
+        bat 'powershell -Command "$ok=(Test-NetConnection -ComputerName localhost -Port 3000).TcpTestSucceeded; if (-not $ok) { Write-Error \\"Frontend 3000 not listening.\\"; exit 1 }"'
       }
     }
   }
