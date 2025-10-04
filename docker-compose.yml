@@ -8,13 +8,20 @@ services:
       - "8000:8000"
     volumes:
       - studypal_db:/app/data
-    # optional: rely on container's own HEALTHCHECK and wait before tests
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8000/health >/dev/null || exit 1"]
       interval: 5s
       timeout: 2s
       retries: 12
       start_period: 2s
-
+    frontend:
+    image: studypal-frontend:ci
+    # nginx listens on 80 inside the container; publish it as 3000 on the host
+    ports:
+      - "3000:80"
+    depends_on:
+      backend:
+        condition: service_healthy
 volumes:
   studypal_db:
+  
