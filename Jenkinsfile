@@ -5,7 +5,7 @@ pipeline {
     stage('Checkout') {
       steps {
         checkout scm
-        echo 'Repo checked out. Ready to build!'
+        echo 'Test Build Successful'
       }
     }
   }
