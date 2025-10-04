@@ -10,6 +10,8 @@ import (
 func RouterApp(c *fiber.App) {
 	c.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
+		AllowMethods: "GET,POST,PUT,DELETE,OPTIONS",
+		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
 	}))
 	c.Get("/api/showallprofiles", controllers.ShowAllProfiles)
 	c.Get("/api/showcourseIdforprofile/:id", controllers.ShowCourseIdForProfile)
