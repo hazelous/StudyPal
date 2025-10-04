@@ -25,7 +25,4 @@ func ConnectDatabase() {
 	DB = db
 
 	fmt.Println("SQLite database connected:", path)
-
-	// (Optional) create tables on first run:
-	// _ = DB.AutoMigrate(&entity.Profile{}, &entity.Course{}, &entity.Task{}, &entity.ProfileCourse{})
 }
