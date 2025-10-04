@@ -33,11 +33,6 @@ pipeline {
       steps {
         bat '''
         set COMPOSE_PROJECT_NAME=studypal
-    
-        rem Kill anything else using 8000/3000 so our compose can bind them
-        powershell -Command "$ids = docker ps -q --filter \"publish=8000\"; if ($ids) { docker rm -f $ids }"
-        powershell -Command "$ids = docker ps -q --filter \"publish=3000\"; if ($ids) { docker rm -f $ids }"
-    
         docker compose -f docker-compose.yml down -v --remove-orphans || echo no previous stack
         docker compose -f docker-compose.yml up -d --pull never --force-recreate
         '''
