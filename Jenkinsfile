@@ -43,7 +43,7 @@ pipeline {
         '''
     
         // verify ports match compose (8081 & 3000)
-        bat 'powershell -Command "$ok=(Test-NetConnection -ComputerName localhost -Port 8081).TcpTestSucceeded; if (-not $ok) { Write-Error \\"Backend port 8081 not listening.\\"; exit 1 }"'
+        bat 'powershell -Command "$ok=(Test-NetConnection -ComputerName localhost -Port 8000).TcpTestSucceeded; if (-not $ok) { Write-Error \\"Backend port 8000 not listening.\\"; exit 1 }"'
         bat 'powershell -Command "$ok=(Test-NetConnection -ComputerName localhost -Port 3000).TcpTestSucceeded; if (-not $ok) { Write-Error \\"Frontend port 3000 not listening.\\"; exit 1 }"'
       }
     }
