@@ -33,7 +33,7 @@ pipeline {
       steps {
         bat '''
         set COMPOSE_PROJECT_NAME=studypal
-        docker compose -f docker-compose.yml down -v --remove-orphans || echo no previous stack
+        docker compose -f docker-compose.yml down --remove-orphans || echo no previous stack
         docker compose -f docker-compose.yml up -d --pull never --force-recreate
         '''
         bat 'docker compose -f docker-compose.yml ps'
