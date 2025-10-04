@@ -33,5 +33,5 @@ func main() {
 		port = "8000"
 	}
 	log.Printf("Starting server on :%s ...", port)
-	log.Fatal(app.Listen(":8000"))
+	log.Fatal(app.Listen(":" + port))
 }
