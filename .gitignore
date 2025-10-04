@@ -8,6 +8,7 @@ Backend/vendor/
 Backend/*.exe
 Backend/*.log
 Backend/study_pal.db
+Backend/*.db
 
 # IDEs and OS
 .vscode/
