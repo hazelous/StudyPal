@@ -31,13 +31,18 @@ pipeline {
 
     stage('Deploy') {
       steps {
-        // Clean up any previous stack (ignore errors if nothing is running)
-        bat 'docker compose -f docker-compose.yml down -v --remove-orphans || echo no previous stack'
-
-        // Bring up both services using the local images built in Stage 1 (set in the docker-compose.yml file)
-        bat 'docker compose -f docker-compose.yml up -d'
-
-        // fail build if ports aren't listening
+        bat '''
+        set COMPOSE_PROJECT_NAME=studypal
+        docker compose -f docker-compose.yml down -v --remove-orphans || echo no previous stack
+    
+        rem Clean up any old manually created containers that might clash
+        docker rm -f studypal_backend 2>NUL || echo no manual backend
+        docker rm -f studypal_frontend 2>NUL || echo no manual frontend
+    
+        docker compose -f docker-compose.yml up -d --pull never
+        '''
+    
+        // verify ports match compose (8081 & 3000)
         bat 'powershell -Command "$ok=(Test-NetConnection -ComputerName localhost -Port 8081).TcpTestSucceeded; if (-not $ok) { Write-Error \\"Backend port 8081 not listening.\\"; exit 1 }"'
         bat 'powershell -Command "$ok=(Test-NetConnection -ComputerName localhost -Port 3000).TcpTestSucceeded; if (-not $ok) { Write-Error \\"Frontend port 3000 not listening.\\"; exit 1 }"'
       }
