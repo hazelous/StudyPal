@@ -32,11 +32,14 @@ pipeline {
         '''
       }
     }
+  }
 
   post {
     always {
       // Show the images that were built
       bat 'docker images'
+      // Store the test results in a file
+      archiveArtifacts artifacts: 'Backend/coverage.out', allowEmptyArchive: true
     }
   }
 }
