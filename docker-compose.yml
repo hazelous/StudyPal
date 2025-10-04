@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  backend:
+    image: studypal-backend:ci
+    container_name: studypal_backend
+    environment:
+      - PORT=8080
+    ports:
+      - "8081:8080"   # host:container (Jenkins uses 8080 already)
+
+  frontend:
+    image: studypal-frontend:ci
+    container_name: studypal_frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
