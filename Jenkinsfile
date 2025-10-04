@@ -41,7 +41,8 @@ pipeline {
         docker compose -f docker-compose.yml down -v --remove-orphans || echo no previous stack
         docker compose -f docker-compose.yml up -d --pull never --force-recreate
         '''
-    
+        bat 'docker compose -f docker-compose.yml ps'
+        bat 'docker compose -f docker-compose.yml logs backend --tail=120'
         bat 'powershell -Command "$ok=(Test-NetConnection -ComputerName localhost -Port 8000).TcpTestSucceeded; if (-not $ok) { Write-Error \\"Backend 8000 not listening.\\"; exit 1 }"'
         bat 'powershell -Command "$ok=(Test-NetConnection -ComputerName localhost -Port 3000).TcpTestSucceeded; if (-not $ok) { Write-Error \\"Frontend 3000 not listening.\\"; exit 1 }"'
       }
