@@ -8,7 +8,6 @@ services:
       - "8000:8000"
     volumes:
       - studypal_db:/app/data
-    # image already has HEALTHCHECK; no need to duplicate here
 
   frontend:
     image: studypal-frontend:ci
