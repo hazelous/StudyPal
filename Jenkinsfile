@@ -28,6 +28,20 @@ pipeline {
         '''
       }
     }
+
+    stage('Deploy') {
+      steps {
+        // Clean up any previous stack (ignore errors if nothing is running)
+        bat 'docker compose -f docker-compose.yml down -v --remove-orphans || echo no previous stack'
+
+        // Bring up both services using the local images built in Stage 1 (set in the docker-compose.yml file)
+        bat 'docker compose -f docker-compose.yml up -d'
+
+        // fail build if ports aren't listening
+        bat 'powershell -Command "$ok=(Test-NetConnection -ComputerName localhost -Port 18080).TcpTestSucceeded; if (-not $ok) { Write-Error \\"Backend port 18080 not listening.\\"; exit 1 }"'
+        bat 'powershell -Command "$ok=(Test-NetConnection -ComputerName localhost -Port 13000).TcpTestSucceeded; if (-not $ok) { Write-Error \\"Frontend port 13000 not listening.\\"; exit 1 }"'
+      }
+    }
   }
 
   post {
