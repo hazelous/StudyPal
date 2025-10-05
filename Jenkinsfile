@@ -32,7 +32,7 @@ pipeline {
         script {
           def failures = []
     
-          // (A) gofmt – report files that need formatting
+          // gofmt report files that need formatting
           def s1 = bat(returnStatus: true, script: '''
             cd Backend
             docker run --rm -v "%cd%":/src -w /src golang:1.24 ^
@@ -40,7 +40,7 @@ pipeline {
           ''')
           if (s1 != 0) { failures << 'gofmt' }
     
-          // (B) golangci-lint – download modules then lint (all in one container)
+          // golangci-lint download modules then lint (all in one container)
           def s2 = bat(returnStatus: true, script: '''
             cd Backend
             docker run --rm -e GOTOOLCHAIN=auto -v "%cd%":/app -w /app golangci/golangci-lint:v1.59.1 ^
@@ -48,7 +48,7 @@ pipeline {
           ''')
           if (s2 != 0) { failures << 'golangci-lint' }
     
-          // (C) Prettier – frontend formatting check
+          // Prettier frontend formatting check
           def s3 = bat(returnStatus: true, script: '''
             cd Frontend
             docker run --rm -v "%cd%":/app -w /app node:20-alpine ^
@@ -56,7 +56,7 @@ pipeline {
           ''')
           if (s3 != 0) { failures << 'prettier' }
     
-          // Always succeed; just log a summary
+          // Always succeed, just logs a summary
           if (failures) {
             echo "Code quality checks completed with issues in: ${failures.join(', ')} (non-blocking)."
           } else {
@@ -69,26 +69,26 @@ pipeline {
     stage('Security') {
       steps {
         script {
-          // --- Go backend: govulncheck (non-blocking) ---
+          // Go backend: govulncheck (non-blocking)
           bat '''
           cd Backend
           docker run --rm -e GOTOOLCHAIN=auto -v "%cd%":/src -w /src golang:1.24-alpine ^
             sh -lc "export GOPROXY=https://proxy.golang.org,direct; /usr/local/go/bin/go run golang.org/x/vuln/cmd/govulncheck@latest ./... || true"
           '''
     
-          // --- Frontend: npm audit (non-blocking) ---
+          // Frontend: npm audit (non-blocking)
           bat '''
           cd Frontend
           docker run --rm -v "%cd%":/app -w /app node:20-alpine ^
             sh -lc "npm ci >/dev/null 2>&1 || true; npm audit --audit-level=high || true"
           '''
     
-          // --- Container images: Trivy scan via TARs (Windows-friendly, non-blocking) ---
+          // Container images: Trivy scan via TARs (Windows-friendly, non-blocking)
           // Save locally built images to TAR so Trivy doesn't need Docker socket access
           bat 'docker save studypal-backend:ci  -o backend.tar'
           bat 'docker save studypal-frontend:ci -o frontend.tar'
     
-          // Scan the TARs; --exit-code 0 ensures success even if vulns are found
+          // Scan the TARs, --exit-code 0 ensures success even if vulnerabilities are found so that build can continue
           bat '''
           docker run --rm -v "%cd%":/work aquasec/trivy:latest ^
             image --input /work/backend.tar --no-progress --severity HIGH,CRITICAL --exit-code 0 --format table
