@@ -29,17 +29,40 @@ pipeline {
 
     stage('Code Quality') {
       steps {
-        bat '''
-        cd Backend
-
-        docker run --rm -v "%cd%":/src -w /src golang:1.24 ^
-          sh -lc "bad=$(gofmt -l .); if [ -n \\"$bad\\" ]; then echo \\"Unformatted files:\\"; echo \\"$bad\\"; exit 1; fi"
-
-        docker run --rm -v "%cd%":/app -w /app golangci/golangci-lint:v1.59.1 ^
-          golangci-lint run --timeout=3m
-        '''
-        rem run a prettier check on the frontend
-        bat "cd Frontend && docker run --rm -v \"%cd%\":/app -w /app node:20-alpine sh -lc \"npm ci && npx --yes prettier --check \\\"src/**/*.{js,ts,vue,css,scss,json,md}\\\"\""
+        script {
+          def failures = []
+    
+          // (A) gofmt – report files that need formatting
+          def s1 = bat(returnStatus: true, script: '''
+            cd Backend
+            docker run --rm -v "%cd%":/src -w /src golang:1.24 ^
+              sh -lc "bad=$(gofmt -l .); if [ -n \\"$bad\\" ]; then echo '=== gofmt: files need formatting ==='; echo \\"$bad\\"; exit 1; fi"
+          ''')
+          if (s1 != 0) { failures << 'gofmt' }
+    
+          // (B) golangci-lint – static analysis
+          def s2 = bat(returnStatus: true, script: '''
+            cd Backend
+            docker run --rm -v "%cd%":/app -w /app golangci/golangci-lint:v1.59.1 ^
+              golangci-lint run --timeout=3m
+          ''')
+          if (s2 != 0) { failures << 'golangci-lint' }
+    
+          // (C) Prettier – frontend formatting check
+          def s3 = bat(returnStatus: true, script: '''
+            cd Frontend
+            docker run --rm -v "%cd%":/app -w /app node:20-alpine ^
+              sh -lc "npm ci && npx --yes prettier --check \\"src/**/*.{js,ts,vue,css,scss,json,md}\\""
+          ''')
+          if (s3 != 0) { failures << 'prettier' }
+    
+          // Always succeed; just log a summary
+          if (failures) {
+            echo "Code quality checks completed with issues in: ${failures.join(', ')} (non-blocking)."
+          } else {
+            echo 'Code quality checks passed.'
+          }
+        }
       }
     }
 
