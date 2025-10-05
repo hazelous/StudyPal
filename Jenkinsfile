@@ -31,11 +31,7 @@ pipeline {
       steps {
         script {
           def failures = []
-          bat '''
-            cd Backend
-            docker run --rm -v "%cd%":/src -w /src golang:1.24 ^
-              sh -lc "go mod download"
-          '''
+    
           // (A) gofmt – report files that need formatting
           def s1 = bat(returnStatus: true, script: '''
             cd Backend
@@ -44,11 +40,11 @@ pipeline {
           ''')
           if (s1 != 0) { failures << 'gofmt' }
     
-          // (B) golangci-lint – static analysis
+          // (B) golangci-lint – download modules then lint (all in one container)
           def s2 = bat(returnStatus: true, script: '''
             cd Backend
-            docker run --rm -v "%cd%":/app -w /app golangci/golangci-lint:v1.59.1 ^
-              golangci-lint run --timeout=3m
+            docker run --rm -e GOTOOLCHAIN=auto -v "%cd%":/app -w /app golangci/golangci-lint:v1.59.1 ^
+              sh -lc "go env -w GOPROXY=https://proxy.golang.org,direct; go mod download; golangci-lint run --timeout=5m"
           ''')
           if (s2 != 0) { failures << 'golangci-lint' }
     
@@ -69,6 +65,7 @@ pipeline {
         }
       }
     }
+
 
     stage('Deploy') {
       steps {
