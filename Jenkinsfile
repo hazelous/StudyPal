@@ -12,9 +12,7 @@ pipeline {
 
     stage('Build') {
       steps {
-        // Build Backend image
         bat 'docker build -t studypal-backend:ci .\\Backend'
-        // Build Frontend image
         bat 'docker build -t studypal-frontend:ci .\\Frontend'
       }
     }
@@ -26,6 +24,22 @@ pipeline {
         docker run --rm -e GOTOOLCHAIN=local -v "%cd%":/src -w /src golang:1.24 ^
           go test ./internal/health -v -vet=off
         '''
+      }
+    }
+
+    stage('Code Quality') {
+      steps {
+        bat '''
+        cd Backend
+
+        docker run --rm -v "%cd%":/src -w /src golang:1.24 ^
+          sh -lc "bad=$(gofmt -l .); if [ -n \\"$bad\\" ]; then echo \\"Unformatted files:\\"; echo \\"$bad\\"; exit 1; fi"
+
+        docker run --rm -v "%cd%":/app -w /app golangci/golangci-lint:v1.59.1 ^
+          golangci-lint run --timeout=3m
+        '''
+        rem run a prettier check on the frontend
+        bat "cd Frontend && docker run --rm -v \"%cd%\":/app -w /app node:20-alpine sh -lc \"npm ci && npx --yes prettier --check \\\"src/**/*.{js,ts,vue,css,scss,json,md}\\\"\""
       }
     }
 
@@ -46,7 +60,6 @@ pipeline {
 
   post {
     always {
-      // Show the images that were built
       bat 'docker images'
     }
   }
