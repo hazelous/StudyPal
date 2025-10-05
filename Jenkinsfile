@@ -69,43 +69,36 @@ pipeline {
     stage('Security') {
       steps {
         script {
-          def failed = []
+          // --- Go backend: govulncheck (non-blocking) ---
+          bat '''
+          cd Backend
+          docker run --rm -e GOTOOLCHAIN=auto -v "%cd%":/src -w /src golang:1.24-alpine ^
+            sh -lc "export GOPROXY=https://proxy.golang.org,direct; /usr/local/go/bin/go run golang.org/x/vuln/cmd/govulncheck@latest ./... || true"
+          '''
     
-          // 1) Go backend – govulncheck (non-blocking)
-          def sGo = bat(returnStatus: true, script: '''
-            cd Backend
-            docker run --rm -e GOTOOLCHAIN=auto -v "%cd%":/src -w /src golang:1.24 ^
-              sh -lc "go run golang.org/x/vuln/cmd/govulncheck@latest ./... || true"
-          ''')
-          if (sGo != 0) { failed << 'govulncheck' } // usually 0 anyway; we keep the shape consistent
+          // --- Frontend: npm audit (non-blocking) ---
+          bat '''
+          cd Frontend
+          docker run --rm -v "%cd%":/app -w /app node:20-alpine ^
+            sh -lc "npm ci >/dev/null 2>&1 || true; npm audit --audit-level=high || true"
+          '''
     
-          // 2) Frontend – npm audit (non-blocking)
-          def sNpm = bat(returnStatus: true, script: '''
-            cd Frontend
-            docker run --rm -v "%cd%":/app -w /app node:20-alpine ^
-              sh -lc "npm ci >/dev/null 2>&1 || true; npm audit --audit-level=high || true"
-          ''')
-          if (sNpm != 0) { failed << 'npm audit' }
+          // --- Container images: Trivy scan via TARs (Windows-friendly, non-blocking) ---
+          // Save locally built images to TAR so Trivy doesn't need Docker socket access
+          bat 'docker save studypal-backend:ci  -o backend.tar'
+          bat 'docker save studypal-frontend:ci -o frontend.tar'
     
-          // 3) Container images – Trivy (non-blocking). Looks for HIGH/CRITICAL only.
-          def sTrivy = bat(returnStatus: true, script: '''
-            docker run --rm ^
-              -v "%cd%":/work ^
-              aquasec/trivy:latest image --no-progress --severity HIGH,CRITICAL --exit-code 0 --format table studypal-backend:ci
+          // Scan the TARs; --exit-code 0 ensures success even if vulns are found
+          bat '''
+          docker run --rm -v "%cd%":/work aquasec/trivy:latest ^
+            image --input /work/backend.tar --no-progress --severity HIGH,CRITICAL --exit-code 0 --format table
+          '''
+          bat '''
+          docker run --rm -v "%cd%":/work aquasec/trivy:latest ^
+            image --input /work/frontend.tar --no-progress --severity HIGH,CRITICAL --exit-code 0 --format table
+          '''
     
-            docker run --rm ^
-              -v "%cd%":/work ^
-              aquasec/trivy:latest image --no-progress --severity HIGH,CRITICAL --exit-code 0 --format table studypal-frontend:ci
-          ''')
-          if (sTrivy != 0) { failed << 'trivy' }
-    
-          // Always succeed; print a concise summary you can screenshot for the report
           echo 'Security checks (non-blocking) finished.'
-          if (failed) {
-            echo "Tools reported issues (see console above): ${failed.join(', ')}"
-          } else {
-            echo 'No high/critical issues reported by the security tools.'
-          }
         }
       }
     }
