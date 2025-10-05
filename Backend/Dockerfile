@@ -1,4 +1,4 @@
-# ----- Build stage -----
+# Build stage
 FROM golang:1.24-alpine AS build
 ENV GOTOOLCHAIN=auto
 RUN apk add --no-cache build-base
@@ -13,9 +13,9 @@ COPY . .
 # CGO is required by mattn/go-sqlite3 via gorm's sqlite driver
 RUN CGO_ENABLED=1 GOOS=linux go build -o /out/studypal
 
-# ----- Runtime stage -----
+# Runtime stage
 FROM alpine:3.20
-# libgcc is required for CGO runtime on Alpine; ca-certs for outbound HTTPS if needed
+# libgcc is required for CGO runtime on Alpine
 RUN apk add --no-cache ca-certificates libgcc
 WORKDIR /app
 
@@ -30,7 +30,7 @@ RUN mkdir -p /app/data
 
 EXPOSE 8000
 
-# lightweight healthcheck; busybox wget is present in Alpine
+# lightweight healthcheck
 HEALTHCHECK --interval=5s --timeout=2s --retries=12 \
   CMD wget -qO- "http://127.0.0.1:${PORT}/health" >/dev/null || exit 1
 
