@@ -31,15 +31,6 @@ pipeline {
       steps {
         script {
           def failures = []
-
-          // defining go modules first before linting so that it won't cause errors on fiber
-          bat '''
-            cd Backend
-            docker run --rm -v "%cd%":/src -w /src golang:1.24 ^
-              sh -lc "go mod download"
-          '''
-
-    
           // (A) gofmt – report files that need formatting
           def s1 = bat(returnStatus: true, script: '''
             cd Backend
